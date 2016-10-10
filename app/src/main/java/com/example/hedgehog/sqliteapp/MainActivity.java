@@ -20,20 +20,20 @@ public class MainActivity extends AppCompatActivity {
     int[] settings_key = { 101, 102, 103, 104, 101, 102, 103, 104 };
     int[] settings_value = { 2, 3, 2, 2, 3, 1, 2, 4 };
 
-    int chosenUserId = 1;
+    int chosenUserId = 3;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DBHelper dbh = new DBHelper(this);
         SQLiteDatabase db = dbh.getWritableDatabase();
-        Cursor c;
 
-        String sqlSelect = "SELECT PERSON._id AS Id, PERSON._name AS Name, PERSON._surname AS Surname, ST._key AS SettingsKey, ST._value AS SettingsValue "
-                + "from person as PERSON "
-                + "inner join settings as ST "
-                + "on PERSON._id = ST._user_id "
-                + "where PERSON._id = ?";
+        Cursor c;
+        String sqlSelect = "SELECT PERSON.id AS Id, PERSON.name AS Name, PERSON.surname AS Surname, ST.key AS SettingsKey, ST.value AS SettingsValue "
+                + "FROM person AS PERSON "
+                + "INNER JOIN settings AS ST "
+                + "ON PERSON.id = ST.userId "
+                + "WHERE PERSON.id = ?";
         c = db.rawQuery(sqlSelect, new String[] {"" + chosenUserId});
         logCursor(c);
 
@@ -65,35 +65,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onCreate(SQLiteDatabase db) {
-            Log.d(LOG_TAG, "--- onCreate database ---");
+
             ContentValues cv = new ContentValues();
 
             db.execSQL("CREATE TABLE IF NOT EXISTS person ("
-                    + "_id integer primary key,"
-                    + "_name text,"
-                    + "_surname text"
+                    + "id integer primary key,"
+                    + "name text,"
+                    + "surname text"
                     + ");");
 
             for (int i = 0; i < person_id.length; i++) {
                 cv.clear();
-                cv.put("_id", person_id[i]);
-                cv.put("_name", person_name[i]);
-                cv.put("_surname", person_surname[i]);
+                cv.put("id", person_id[i]);
+                cv.put("name", person_name[i]);
+                cv.put("surname", person_surname[i]);
                 db.insert("person", null, cv);
             }
 
             db.execSQL("CREATE TABLE IF NOT EXISTS settings ("
-                    + "_id integer primary key autoincrement,"
-                    + "_user_id integer,"
-                    + "_key integer,"
-                    + "_value integer"
+                    + "id integer primary key autoincrement,"
+                    + "userId integer,"
+                    + "key integer,"
+                    + "value integer"
                     + ");");
 
             for (int i = 0; i < settings_user_id.length; i++) {
                 cv.clear();
-                cv.put("_user_id", settings_user_id[i]);
-                cv.put("_key", settings_key[i]);
-                cv.put("_value", settings_value[i]);
+                cv.put("userId", settings_user_id[i]);
+                cv.put("key", settings_key[i]);
+                cv.put("value", settings_value[i]);
                 db.insert("settings", null, cv);
             }
         }
